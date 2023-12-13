@@ -25,24 +25,32 @@ public class PrimaryConstructorDemoTest
     }
 }
 
-file class Person(Guid id, string firstName, string lastName, DateTimeOffset creationDate)
+file class Person
 {
-    public Guid Id { get; } = id;
+    public Person(Guid id, string firstName, string lastName, DateTimeOffset creationDate)
+    {
+        Id = id;
+        FirstName = firstName ?? throw new ArgumentNullException(nameof(firstName));
+        LastName = lastName;
+        CreationDate = creationDate;
+    }
+    
+    public Guid Id { get; }
 
-    public string FirstName { get; set; } = firstName;
+    public string FirstName { get; set; }
 
-    public string LastName { get; set; } = lastName;
+    public string LastName { get; set; }
 
-    public DateTimeOffset CreationDate { get; } = creationDate;
+    public DateTimeOffset CreationDate { get; }
 }
 
-file class PeopleService(TimeProvider timeProvider)
+file class PeopleService(TimeProvider _timeProvider)
 {
     public List<Person> Storage { get; } = new();
 
     public Guid AddNewPerson(string firstName, string lastName)
     {
-        var person = new Person(Guid.NewGuid(), firstName, lastName, timeProvider.GetUtcNow());
+        var person = new Person(Guid.NewGuid(), firstName, lastName, _timeProvider.GetUtcNow());
         Storage.Add(person);
         return person.Id;
     }
